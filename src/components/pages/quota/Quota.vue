@@ -374,28 +374,31 @@ export default {
       if (opt.day) {
         const yearKey =
           `${opt.year}-${this.dateDigit(opt.month)}-${this.dateDigit(opt.day)}`
-        return this.quotaMap[personId][yearKey]
+        return this.quotaMap['frames'][personId]['day'][yearKey]
       } else if (opt.week) {
         const weekKey = `${opt.year}-${opt.week}`
-        return this.quotaMap[personId][weekKey]
+        return this.quotaMap['frames'][personId]['week'][weekKey]
       } else {
         const dayKey = `${opt.year}-${this.dateDigit(opt.month)}`
-        return this.quotaMap[personId][dayKey]
+        return this.quotaMap['frames'][personId]['month'][dayKey]
       }
     },
 
     getQuotaAverage (personId, opt = {}) {
+      return 0
+      /*
       let average
       if (opt.month) {
         const monthKey = opt.year + '-' + this.dateDigit(opt.month)
-        average = this.quotaMap[personId].average[monthKey]
+        average = this.quotaMap['frames'][personId].average[monthKey]
       } else if (opt.week) {
         const weekKey = `${opt.year}-${opt.week}`
-        average = this.quotaMap[personId].average[weekKey]
-      } else if (this.quotaMap[personId].average) {
-        average = this.quotaMap[personId].average[opt.year]
+        average = this.quotaMap['frames'][personId].average[weekKey]
+      } else if (this.quotaMap['frames'][personId].average) {
+        average = this.quotaMap['frames'][personId].average[opt.year]
       }
       return average ? average.toFixed(2) : '-'
+      */
     },
 
     isDaySelected (personId, year, month, day) {
