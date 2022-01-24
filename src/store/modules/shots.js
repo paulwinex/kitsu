@@ -31,9 +31,6 @@ import {
   computeStats
 } from '../../lib/stats'
 import {
-  frameToSeconds
-} from '../../lib/video'
-import {
   minutesToDays
 } from '../../lib/time'
 import {
@@ -1021,9 +1018,11 @@ const actions = {
   computeQuota (
     { commit, state, rootGetters },
     { taskTypeId, detailLevel, countMode }) {
+    const production = rootGetters.currentProduction
+    return shotsApi.getQuotas(production.id, taskTypeId, detailLevel)
+    /*
     const taskMap = rootGetters.taskMap
     const taskStatusMap = rootGetters.taskStatusMap
-    const production = rootGetters.currentProduction
     const quotas = {}
 
     cache.shots.forEach((shot) => {
@@ -1059,6 +1058,7 @@ const actions = {
       }
     })
     return Promise.resolve(quotas)
+    */
   },
 
   getPersonShots (
