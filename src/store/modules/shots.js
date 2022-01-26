@@ -131,10 +131,6 @@ import {
 } from '../mutation-types'
 import async from 'async'
 
-const AVERAGE = 'average'
-const COUNT = 'count'
-const TOTAL = 'total'
-
 const cache = {
   shots: [],
   shotIndex: []
@@ -251,23 +247,6 @@ const helpers = {
       endDateString = moment(task.end_date, 'YYYY-MM-DD').format('GGGG-W')
     }
     return endDateString
-  },
-
-  initQuota (quotas, personId, endDateString, period) {
-    if (!quotas[personId]) quotas[personId] = {}
-    const personQuotas = quotas[personId]
-
-    if (!personQuotas[endDateString]) personQuotas[endDateString] = 0
-    if (!personQuotas[AVERAGE]) personQuotas[AVERAGE] = {}
-    if (!personQuotas[AVERAGE][period]) personQuotas[AVERAGE][period] = 0
-    if (!personQuotas[COUNT]) personQuotas[COUNT] = {}
-    if (!personQuotas[COUNT][period]) {
-      personQuotas[COUNT][period] = 0
-    }
-    if (!personQuotas[TOTAL]) personQuotas[TOTAL] = {}
-    if (!personQuotas[TOTAL][period]) personQuotas[TOTAL][period] = 0
-
-    return personQuotas
   },
 
   buildResult (state, {
@@ -1020,45 +999,6 @@ const actions = {
     { taskTypeId, detailLevel, countMode }) {
     const production = rootGetters.currentProduction
     return shotsApi.getQuotas(production.id, taskTypeId, detailLevel)
-    /*
-    const taskMap = rootGetters.taskMap
-    const taskStatusMap = rootGetters.taskStatusMap
-    const quotas = {}
-
-    cache.shots.forEach((shot) => {
-      const task = taskMap.get(shot.validations.get(taskTypeId))
-      const isTaskFinished =
-        task && taskStatusMap.get(task.task_status_id).is_done
-      if (isTaskFinished) {
-        const period = helpers.getPeriod(task, detailLevel)
-        const endDateString = helpers.getTaskEndDate(task, detailLevel)
-
-        task.assignees.forEach(personId => {
-          const personQuotas =
-            helpers.initQuota(quotas, personId, endDateString, period)
-          if (shot.nb_frames) {
-            let quota = shot.nb_frames
-            if (countMode === 'seconds') {
-              quota = frameToSeconds(shot.nb_frames, production, shot)
-            }
-            const isNewQuotaDay = personQuotas[endDateString] === 0
-            if (isNewQuotaDay) personQuotas[COUNT][period]++
-            personQuotas[endDateString] += quota
-            personQuotas[TOTAL][period] += quota
-            if (countMode === 'seconds') {
-              personQuotas[TOTAL][period] =
-                Math.round(personQuotas[TOTAL][period] * 100) / 100
-              personQuotas[endDateString] =
-                Math.round(personQuotas[endDateString] * 100) / 100
-            }
-            personQuotas[AVERAGE][period] =
-              personQuotas[TOTAL][period] / personQuotas[COUNT][period]
-          }
-        })
-      }
-    })
-    return Promise.resolve(quotas)
-    */
   },
 
   getPersonShots (

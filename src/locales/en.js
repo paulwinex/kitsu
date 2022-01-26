@@ -822,6 +822,8 @@ export default {
     details_name: 'Name',
     details_seconds: 'Seconds',
     details_frames: 'Frames',
+    explaination: 'Quotas are based on timesheets to determine when the artist worked. If no time is filled, it considers that the task was done on first feedback request.',
+    export_quotas: 'Export quotas',
     month_label: 'Month',
     no_quota: 'There is no quota for this task type.',
     name: 'Name',

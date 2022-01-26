@@ -372,42 +372,46 @@ export default {
 
     getQuota (personId, opt = {}) {
       if (opt.day) {
-        const yearKey =
+        const dayKey =
           `${opt.year}-${this.dateDigit(opt.month)}-${this.dateDigit(opt.day)}`
-        return this.quotaMap['frames'][personId]['day'][yearKey]
+        return this.quotaMap[personId].day[this.countMode][dayKey]
       } else if (opt.week) {
         const weekKey = `${opt.year}-${opt.week}`
-        return this.quotaMap['frames'][personId]['week'][weekKey]
+        return this.quotaMap[personId].week[this.countMode][weekKey]
       } else {
-        const dayKey = `${opt.year}-${this.dateDigit(opt.month)}`
-        return this.quotaMap['frames'][personId]['month'][dayKey]
+        const monthKey = `${opt.year}-${this.dateDigit(opt.month)}`
+        return this.quotaMap[personId].month[this.countMode][monthKey]
       }
     },
 
     getQuotaAverage (personId, opt = {}) {
-      return 0
-      /*
-      let average
-      if (opt.month) {
-        const monthKey = opt.year + '-' + this.dateDigit(opt.month)
-        average = this.quotaMap['frames'][personId].average[monthKey]
-      } else if (opt.week) {
-        const weekKey = `${opt.year}-${opt.week}`
-        average = this.quotaMap['frames'][personId].average[weekKey]
-      } else if (this.quotaMap['frames'][personId].average) {
-        average = this.quotaMap['frames'][personId].average[opt.year]
+      let average = 0
+      let total = 0
+      let nbEntries
+      if (this.detailLevel === 'day') {
+        const monthKey = `${opt.year}-${this.dateDigit(opt.month)}`
+        total = this.quotaMap[personId].month[this.countMode][monthKey]
+        nbEntries = this.quotaMap[personId].day.entries[monthKey]
+      } else if (this.detailLevel === 'week') {
+        const yearKey = opt.year
+        total = this.quotaMap[personId].year[this.countMode][yearKey]
+        nbEntries = this.quotaMap[personId].week.entries[yearKey]
+      } else if (this.detailLevel === 'month') {
+        const yearKey = opt.year
+        total = this.quotaMap[personId].year[this.countMode][yearKey]
+        nbEntries = this.quotaMap[personId].month.entries[yearKey]
       }
+      average = total / nbEntries
       return average ? average.toFixed(2) : '-'
-      */
     },
 
     isDaySelected (personId, year, month, day) {
       return (
         this.$route.params.person_id &&
         this.$route.params.person_id === personId &&
-        this.$route.params.year === year &&
-        this.$route.params.month === month &&
-        this.$route.params.day === day
+        this.$route.params.year === '' + year &&
+        this.$route.params.month === '' + month &&
+        this.$route.params.day === '' + day
       )
     },
 
@@ -415,8 +419,8 @@ export default {
       return (
         this.$route.params.person_id &&
         this.$route.params.person_id === personId &&
-        this.$route.params.year === year &&
-        this.$route.params.week === week
+        this.$route.params.year === '' + year &&
+        this.$route.params.week === '' + week
       )
     },
 
@@ -424,8 +428,8 @@ export default {
       return (
         this.$route.params.person_id &&
         this.$route.params.person_id === personId &&
-        this.$route.params.year === year &&
-        this.$route.params.month === month
+        this.$route.params.year === '' + year &&
+        this.$route.params.month === '' + month
       )
     },
 
@@ -444,11 +448,9 @@ export default {
     },
 
     detailLevel () {
-      this.loadData()
     },
 
     countMode () {
-      this.loadData()
     },
 
     $route () {

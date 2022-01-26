@@ -46,6 +46,18 @@
           v-model="countMode"
         />
       </div>
+      <div class="flexrow-item">
+        <info-question-mark
+          :text="$t('quota.explaination')"
+        />
+      </div>
+      <div class="filler"></div>
+      <button-simple
+        class="flexrow-item"
+        :title="$t('quota.export_quotas')"
+        icon="download"
+        @click="exportTimesheet"
+      />
     </div>
 
     <quota
@@ -83,18 +95,25 @@
 import moment from 'moment-timezone'
 import { mapGetters, mapActions } from 'vuex'
 
+import csv from '@/lib/csv'
+import stringHelpers from '@/lib/string'
+
 import { monthToString, range } from '../../lib/time'
 import { episodifyRoute } from '../../lib/path'
+import ButtonSimple from '../widgets/ButtonSimple'
 import Combobox from '../widgets/Combobox'
 import ComboboxTaskType from '../widgets/ComboboxTaskType'
+import InfoQuestionMark from '../widgets/InfoQuestionMark'
 import Quota from './quota/Quota'
 import PeopleQuotaInfo from '../sides/PeopleQuotaInfo'
 
 export default {
   name: 'production-quota',
   components: {
+    ButtonSimple,
     Combobox,
     ComboboxTaskType,
+    InfoQuestionMark,
     PeopleQuotaInfo,
     Quota
   },
@@ -105,7 +124,8 @@ export default {
       countMode: 'frames',
       countModeOptions: [
         { label: 'Frames', value: 'frames' },
-        { label: 'Seconds', value: 'seconds' }
+        { label: 'Seconds', value: 'seconds' },
+        { label: 'Count', value: 'count' }
       ],
       detailLevelOptions: [
         { label: 'Day', value: 'day' },
@@ -163,7 +183,6 @@ export default {
       if (currentYear === this.yearString) {
         monthRange = range(month, currentMonth)
       }
-
       return monthRange.map(month => ({
         label: monthToString(month),
         value: `${month}`
@@ -256,6 +275,27 @@ export default {
         episodifyRoute(route, this.currentEpisode.id)
       }
       return route
+    },
+
+    exportTimesheet () {
+      const nameData = [
+        'quotas',
+        this.detailLevel,
+        this.currentYear
+      ]
+      if (this.detailLevel === 'day') nameData.push(this.currentMonth)
+      const name = stringHelpers.slugify(nameData.join('_'))
+      csv.generateQuotas(
+        name,
+        this.timesheet,
+        this.filteredPeople,
+        this.detailLevel,
+        this.currentYear,
+        this.currentMonth,
+        moment().month() + 1,
+        moment().year(),
+        moment().week()
+      )
     }
   },
 
