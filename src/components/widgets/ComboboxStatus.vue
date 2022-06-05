@@ -123,7 +123,9 @@ export default {
   computed: {
     ...mapGetters([
       'isDarkTheme',
-      'taskStatusMap'
+      'taskStatusMap',
+      'isCurrentUserManager',
+      'isCurrentUserSupervisor'
     ]),
 
     currentStatus () {
@@ -173,7 +175,9 @@ export default {
     },
 
     toggleStatusList () {
-      this.showStatusList = !this.showStatusList
+      if (this.isCurrentUserManager || this.isCurrentUserSupervisor) {
+        this.showStatusList = !this.showStatusList
+      }
     }
   }
 }
